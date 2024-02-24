@@ -1,27 +1,34 @@
-const { Tech, Matchup } = require('../models');
+const { Book, User } = require('../models');
+const { signToken, AuthenticationError } = require('../utils/auth');
 
 const resolvers = {
   Query: {
-    tech: async () => {
-      return Tech.find({});
-    },
-    matchups: async (parent, { _id }) => {
-      const params = _id ? { _id } : {};
-      return Matchup.find(params);
+    User: async () => {
+      return User.find({});
     },
   },
   Mutation: {
-    createMatchup: async (parent, args) => {
-      const matchup = await Matchup.create(args);
-      return matchup;
+    // create new user
+    addUser: async (parent, args) => {
+      const newUser = await User.create(args);
+      return newUser;
     },
-    createVote: async (parent, { _id, techNum }) => {
-      const vote = await Matchup.findOneAndUpdate(
-        { _id },
-        { $inc: { [`tech${techNum}_votes`]: 1 } },
-        { new: true }
-      );
-      return vote;
+    // login with existing user
+    login: async (parent, { email, password }) => {
+      const profile = await User.findOne({ email });
+
+      if (!profile) {
+        throw AuthenticationError;
+      }
+
+      const correctPw = await User.isCorrectPassword(password);
+
+      if (!correctPw) {
+        throw AuthenticationError;
+      }
+
+      const token = signToken(profile);
+      return { token, profile };
     },
   },
 };
