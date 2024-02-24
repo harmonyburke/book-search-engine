@@ -1,5 +1,9 @@
 const express = require('express');
 const path = require('path');
+// require apollo server and middleware
+const {ApolloServer}=require('@apollo/server');
+const {expressMiddleware}= require('@apollo/server/express4');
+
 const db = require('./config/connection');
 const routes = require('./routes');
 
@@ -8,6 +12,9 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// use graphql
+app.use('/graphql', expressMiddleware(server))
 
 // if we're in production, serve client/build as static assets
 if (process.env.NODE_ENV === 'production') {
