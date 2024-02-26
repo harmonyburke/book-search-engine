@@ -4,11 +4,11 @@ const typeDefs = `
   }
 
   type Mutation  {
-    login:(email: String!, password:String!) : Auth
-    addUser:(username:String!, email: String!, password:String!) : Auth
-    #add save book later---
-    saveBook:()
-    removeBook:(bookId:ID!): User
+    login(email: String!, password:String!) : Auth
+    addUser(username:String!, email: String!, passwordString!) : Auth
+
+  
+    removeBook(bookId:ID!): User
   }
 
   type User {
