@@ -4,15 +4,14 @@ const { signToken, AuthenticationError } = require('../utils/auth');
 
 const resolvers = {
   Query: {
-    // find all users
-    User: async () => {
-      return User.find({});
-    },
+    // find user
+    me: async (parent, args, context) => {
+      if(!context.user){
+        throw new AuthenticationError('Please log in!')
+      }
 
-    // find all Books
-    Book: async () => {
-      return Book.find({});
-    }
+      return context.user
+    },
   },
   
   Mutation: {
@@ -20,7 +19,9 @@ const resolvers = {
     // create new user
     addUser: async (parent, args) => {
       const newUser = await User.create(args);
-      return newUser;
+      const token=signToken(newUser);
+
+      return {token,newUser};
     },
     // login with existing user
     login: async (parent, { email, password }) => {
@@ -39,14 +40,13 @@ const resolvers = {
       const token = signToken(profile);
       return { token, profile };
     },
-    saveBook: async(parent, args) => {
-      const userBooks= await User.findOneAndUpdate(
-        {_id: User._id},
-        { $addToSet: {savedBooks: body}},
-        { new: true, runValidators: true}
-      );
-      return userBooks;
-    },
+    // saveBook: async(parent, {user, book}) => {
+    //   return User.findByIdAndUpdate(
+    //     user,
+    //     { $addToSet: {savedBooks:book}},
+    //     {new: true, runValidators: true}
+    //   )
+    // },
     // remove Book
     removeBook: async(parent, args, context) => {
       if (context.books) {
