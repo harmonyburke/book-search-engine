@@ -40,7 +40,8 @@ const resolvers = {
       const token = signToken(profile);
       return { token, profile };
     },
-    saveBook: async(parent, {user, bookData}) => {
+
+    saveBook: async(parent, {userId, bookData}) => {
       return User.findByIdAndUpdate(
         {_id:userId},
         { $addToSet: {savedBooks:bookData}},
