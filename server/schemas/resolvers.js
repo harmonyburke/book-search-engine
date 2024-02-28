@@ -40,13 +40,13 @@ const resolvers = {
       const token = signToken(profile);
       return { token, profile };
     },
-    // saveBook: async(parent, {user, book}) => {
-    //   return User.findByIdAndUpdate(
-    //     user,
-    //     { $addToSet: {savedBooks:book}},
-    //     {new: true, runValidators: true}
-    //   )
-    // },
+    saveBook: async(parent, {user, bookData}) => {
+      return User.findByIdAndUpdate(
+        {_id:userId},
+        { $addToSet: {savedBooks:bookData}},
+        {new: true, runValidators: true}
+      )
+    },
     // remove Book
     removeBook: async(parent, args, context) => {
       if (context.books) {
